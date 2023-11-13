@@ -1,3 +1,7 @@
 repos
 dataset/*
 __pycache__/
+application.log
+model_runs/*
+complex/datasets/*/
+complex/embeddings/
