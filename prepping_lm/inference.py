@@ -13,11 +13,15 @@ model.load_state_dict(torch.load('./model_runs/test/finetuned_lm.pth').state_dic
 model.to('cuda:0')
 
 # inference
-input_question ="Which film stars Leonardo DiCaprio and was released in 2015?"
+input_question ="In which year did a thriller film release, featuring actors Jake Gyllenhaal and Rene Russo, with a title related to the world of art?"
+# tokenized_input = tokenizer.encode(
+#     input_question,
+#     return_tensors='pt'
+# ).to('cuda:0')
 tokenized_input = tokenizer.encode(
-    input_question,
-    return_tensors='pt'
-).to('cuda:0')
+        "Answer the question: "+input_question,
+        return_tensors='pt'
+    ).to('cuda:0')
 
 out = model.generate(
     tokenized_input,
@@ -27,4 +31,4 @@ out = model.generate(
 )
 
 # decode and print final answer
-print('Answer: ', " ".join([tokenizer.decode(id) for id in out]))
+print('Answer: ', tokenizer.decode(out[0], skip_special_tokens=True))
