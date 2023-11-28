@@ -1,19 +1,30 @@
 ### To run the code:
-Download IMDb dataset, QA dataset and the test set, using the command `bash download.sh`
+Create conda environment using the steps mentioned in requirements.txt
 
-Make a `repos` directory in root to clone ComplEx, using the command `mkdir repos`
+Download IMDb dataset, QA dataset and the test set, using the command 
+    
+    bash download.sh
 
-Clone the [ComplEx Repository](https://github.com/ttrouill/complex/tree/master), using the command
+To create triples, run 
+    
+    python preprocessing/preprocess_imdb.py
 
-`git clone git@github.com:ttrouill/complex.git` or
+triples will be saved in `./kge/data/IMDb/`
 
-`git clone https://github.com/ttrouill/complex.git`
-
-To create triples, run `python preprocessing/preprocess_imdb.py`
+Install kge, follow instructions mentioned [here](./kge/README.md)
 
 To create KG Embeddings, 
-run `cd repos/complex`
+    
+    cd ./kge/data/
+    
+    python preprocess/preprocess_default.py IMDb
 
-Modify the code in `fb15k_run.py`. For more details refer: [here](repos/complex/README.md).
+    cd ../../
 
-run `python fb15k_run.py`
+    kge start train_config.yaml
+
+To finetune RoBERTa for KGQA, 
+In line 247, change `kge_checkpoint` to path of kge_embeddings saved
+Make sure at line 250 `eval_only = False`
+
+    python ./roberta/model.py
