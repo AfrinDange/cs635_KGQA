@@ -1,0 +1,20 @@
+job.type: train
+job.device: cuda:1
+dataset.name: IMDb
+
+train:
+  type: 1vsAll
+  max_epochs: 500
+  batch_size: 128
+  optimizer: Adagrad
+  optimizer_args:
+    lr: 0.5
+
+valid:
+  every: 50
+  metric: mean_reciprocal_rank_filtered
+
+model: complex
+lookup_embedder:
+  dim: 32
+  regularize_weight: 0.0

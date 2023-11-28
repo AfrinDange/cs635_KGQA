@@ -12,80 +12,77 @@ def create_unique_ids(dataset, entity_columns):
         '''
         os.makedirs('dataset/metadata/', exist_ok=True)
         title_ids = {} # saved in json
-        id = 1
-        integral_titles = [] # added column to dataset
+        str_identifiers = [] # added column to dataset
         for title in dataset['Title'].to_list():
             if title not in title_ids:
-                title_ids[title] = id
-                integral_titles.append('title_'+str(id))
-                id += 1
+                processed_title = title.replace(" ", "_")
+                title_ids[title] = processed_title
+                str_identifiers.append(processed_title)
             else: 
                 if title == 'The Host': # for the second "The Host" title 
-                    title_ids[title+'_'] = id
-                    integral_titles.append('title_'+str(id))
-                    id += 1
+                    processed_title = title.replace(" ", "_") + "_2"
+                    title_ids[title+'_'] = processed_title
+                    str_identifiers.append(processed_title)
                 else:
-                    integral_titles.append('title_'+str(title_ids[title]))
-        dataset['title_id'] = integral_titles
-        json.dump(dict(sorted(title_ids.items())), open('dataset/metadata/title_ids.json', 'w'), indent=4)
+                    str_identifiers.append(title_ids[title])
+
+        dataset['title_id'] = str_identifiers
+        json.dump(dict(sorted(title_ids.items())), open('dataset/metadata/title_ids.json', 'w'), indent=4, ensure_ascii=False)
     
     if 'Genre' in entity_columns:
         '''
         Titles have one or more genres
         '''
         genre_ids = {} # saved in json
-        id = 1
-        integral_genres = []
+        str_identifiers = []
         for genres in dataset['Genre'].to_list():
             title_genres = [] # genres assigned to the row/title
             for genre in genres.split(','):
                 if genre not in genre_ids:
-                    genre_ids[genre] = id
-                    title_genres.append('genre_'+str(id))
-                    id += 1
+                    processed_genre = genre.strip().lower().replace(" ", "_")
+                    genre_ids[genre] = processed_genre
+                    title_genres.append(processed_genre)
                 else:
-                    title_genres.append('genre_'+str(genre_ids[genre]))
-            integral_genres.append(title_genres)
-        dataset['genre_id'] = integral_genres
-        json.dump(dict(sorted(genre_ids.items())), open('dataset/metadata/genre_ids.json', 'w'), indent=4)
+                    title_genres.append(genre_ids[genre])
+            str_identifiers.append(title_genres)
+        dataset['genre_id'] = str_identifiers
+        json.dump(dict(sorted(genre_ids.items())), open('dataset/metadata/genre_ids.json', 'w'), indent=4, ensure_ascii=False)
 
     if 'Actors' in entity_columns:
         '''
         Titles have multiple actors
         '''
         actor_ids = {}
-        id = 1
-        integral_actors = []
+        str_identifiers = []
         for actors in dataset['Actors'].to_list():
             title_actors = [] # actors from a title/row
             for actor in actors.split(','):
-                actor = actor.strip() # trim whitespaces
+                actor = actor.strip().lower() # trim whitespaces
                 if actor not in actor_ids:
-                    actor_ids[actor] = id
-                    title_actors.append('actor_'+str(id))
-                    id += 1
+                    processed_actor = actor.replace(" ", "_")
+                    actor_ids[actor] = processed_actor
+                    title_actors.append(processed_actor)
                 else:
-                    title_actors.append('actor_'+str(actor_ids[actor]))
-            integral_actors.append(title_actors)
-        dataset['actor_id'] = integral_actors
-        json.dump(dict(sorted(actor_ids.items())), open('dataset/metadata.actor_ids.json', 'w'), indent=4)
+                    title_actors.append(actor_ids[actor])
+            str_identifiers.append(title_actors)
+        dataset['actor_id'] = str_identifiers
+        json.dump(dict(sorted(actor_ids.items())), open('dataset/metadata/actor_ids.json', 'w'), indent=4, ensure_ascii=False)
 
     if 'Director' in entity_columns:
         '''
             Each Title has one director
         '''
         director_ids = {}
-        id = 1
-        integral_directors = []
+        str_identifiers = []
         for director in dataset['Director'].to_list():
             if director not in director_ids:
-                director_ids[director] = id
-                integral_directors.append('director_'+str(id))
-                id += 1
+                processed_director = director.strip().lower().replace(" ", "_")
+                director_ids[director] = processed_director
+                str_identifiers.append(processed_director)
             else:
-                integral_directors.append('director_'+str(director_ids[director]))
-        dataset['director_id'] = integral_directors
-        json.dump(dict(sorted(director_ids.items())), open('dataset/metadata/director_ids.json', 'w'), indent=4)
+                str_identifiers.append(director_ids[director])
+        dataset['director_id'] = str_identifiers
+        json.dump(dict(sorted(director_ids.items())), open('dataset/metadata/director_ids.json', 'w'), indent=4, ensure_ascii=False)
 
     # Year is an int column
 
@@ -159,8 +156,17 @@ if __name__ == '__main__':
     train_valid_triples, test_triples = train_test_split_no_unseen(triples_list, test_size=0.1, seed=42)
     train_triples, valid_triples = train_test_split_no_unseen(train_valid_triples, test_size=test_triples.shape[0], seed=42)
 
-    os.makedirs('./complex/datasets/imdb/', exist_ok=True)
-    save_split(train_triples, './complex/datasets/imdb/train.txt')
-    save_split(valid_triples, './complex/datasets/imdb/valid.txt')
-    save_split(test_triples, './complex/datasets/imdb/test.txt')
+    save_dir = './kge/data/IMDb/'
+    os.makedirs(save_dir, exist_ok=True)
+
+    # remove old files
+    files = os.listdir(save_dir)
+    for file in files:
+        file_path = os.path.join(save_dir, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+    save_split(train_triples, os.path.join('./kge/data/IMDb/', 'train.txt'))
+    save_split(valid_triples, os.path.join('./kge/data/IMDb/', 'valid.txt'))
+    save_split(test_triples, os.path.join('./kge/data/IMDb/', 'test.txt'))
     

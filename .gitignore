@@ -5,3 +5,14 @@ application.log
 model_runs/*
 complex/datasets/*/
 complex/embeddings/
+
+EmbedKGQA/pretrained_models/*
+EmbedKGQA/EmbedKGQA/data/*
+EmbedKGQA/kge/*
+kge/local/*
+kge/data/*
+nbs/
+ner/data/*
+ner/saved_models/*
+roberta/results/*
+roberta/results/*/*

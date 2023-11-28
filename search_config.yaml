@@ -1,0 +1,23 @@
+job.type: search
+search.type: ax
+
+dataset.name: IMDb
+model: complex
+lookup_embedder:
+  dim: 32
+
+valid.metric: mean_reciprocal_rank_filtered
+
+ax_search:
+  num_trials: 50
+  num_sobol_trials: 20
+  parameters:
+    - name: train.batch_size
+      type: choice
+      values: [32, 64, 512]
+    - name: train.optimizer_args.lr
+      type: range
+      bounds: [0.001, 1.0]
+    - name: train.type
+      type: fixed
+      value: negative_sampling
